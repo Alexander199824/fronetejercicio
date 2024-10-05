@@ -17,6 +17,7 @@ const App = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [editId, setEditId] = useState(null);
   const [showForm, setShowForm] = useState(false); // Controla la visibilidad del formulario
+  const [searchQuery, setSearchQuery] = useState(''); // Agrega el estado de búsqueda
 
   useEffect(() => {
     fetchLibros();
@@ -63,13 +64,11 @@ const App = () => {
       const response = await fetch('https://backejercicio.onrender.com/api/libros/all');
       const data = await response.json();
 
-      // Verifica el estado de la respuesta
       if (!response.ok) {
         console.log('Error en la respuesta de la API:', response.statusText);
         return;
       }
 
-      console.log('Libros obtenidos:', data);
       setLibros(data.libros);
     } catch (error) {
       console.log('Error al obtener libros:', error);
@@ -114,16 +113,28 @@ const App = () => {
     setShowForm(false); // Ocultar formulario
   };
 
+  // Filtrar los libros según el término de búsqueda
+  const filteredLibros = libros.filter((libro) =>
+    Object.values(libro).some((value) =>
+      value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
   return (
     <div className="App">
       <h1>Gestión de Libros</h1>
-      {/* Encabezado con botón y título en la misma línea */}
       <div className="header-container">
         <h2>Lista de Libros</h2>
+        <input
+          type="text"
+          className="search-bar"
+          placeholder="Buscar..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
         <button className="add-button" onClick={() => setShowForm(true)}>Agregar Libro</button>
       </div>
 
-      {/* Mostrar el formulario solo si showForm es verdadero */}
       {showForm && (
         <div className="modal">
           <div className="modal-content">
@@ -145,7 +156,6 @@ const App = () => {
         </div>
       )}
 
-      {/* Columna para la tabla de libros */}
       <div className="table-container">
         <table>
           <thead>
@@ -162,7 +172,7 @@ const App = () => {
             </tr>
           </thead>
           <tbody>
-            {libros.map((libro) => (
+            {filteredLibros.map((libro) => (
               <tr key={libro.Id_libro}>
                 <td>{libro.Titulo}</td>
                 <td>{libro.Id_autor}</td>
