@@ -31,8 +31,8 @@ const App = () => {
     e.preventDefault();
     const method = isEdit ? 'PUT' : 'POST';
     const url = isEdit
-      ? `/api/libros/update/${editId}`
-      : '/api/libros/create';
+      ? `https://backejercicio.onrender.com/api/libros/update/${editId}`
+      : 'https://backejercicio.onrender.com/api/libros/create';
 
     try {
       const response = await fetch(url, {
@@ -60,8 +60,16 @@ const App = () => {
 
   const fetchLibros = async () => {
     try {
-      const response = await fetch('/api/libros/all');
+      const response = await fetch('https://backejercicio.onrender.com/api/libros/all');
       const data = await response.json();
+
+      // Verifica el estado de la respuesta
+      if (!response.ok) {
+        console.log('Error en la respuesta de la API:', response.statusText);
+        return;
+      }
+
+      console.log('Libros obtenidos:', data);
       setLibros(data.libros);
     } catch (error) {
       console.log('Error al obtener libros:', error);
@@ -77,7 +85,7 @@ const App = () => {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`/api/libros/delete/${id}`, {
+      await fetch(`https://backejercicio.onrender.com/api/libros/delete/${id}`, {
         method: 'DELETE',
       });
       alert('Libro eliminado con éxito');
